@@ -32,7 +32,6 @@ namespace HueTest
                 Console.WriteLine($"ERROR: {obj["error"]["description"]}");
         }
 
-        [Serializable]
         public class HueLamp : ISerializable
         {
             [Serializable]
@@ -69,8 +68,17 @@ namespace HueTest
 
                 public enum ColorModeState
                 {
+                    /// <summary>
+                    /// Can only be used when both Hue and Saturation are present
+                    /// </summary>
                     HUE_AND_SATURATION,
+                    /// <summary>
+                    /// Can only be used when X&Y are present
+                    /// </summary>
                     XY,
+                    /// <summary>
+                    /// Can only be used when ColorTemprature is present
+                    /// </summary>
                     COLOR_TEMPRATURE
                 }
                 private static ColorModeState ColorModeStateDesirialize(string colorMode)
@@ -150,6 +158,9 @@ namespace HueTest
                 }
 
                 private Option<ushort> ct;
+                /// <summary>
+                /// Optional, Range(153, 500)
+                /// </summary>
                 public Option<ushort> ColorTemperature
                 {
                     get { return ct; }
@@ -167,7 +178,7 @@ namespace HueTest
                 public Option<ColorModeState> ColorMode
                 {
                     get { return colormode; }
-                    set { Assert.True(colormode.HasValue && value.HasValue); Set("colormode", ColorModeStateSerialize(colormode = value)); }
+                    set { Assert.True(colormode.HasValue && value.HasValue); CheckColorMode(value.ValueOr(ColorModeState.COLOR_TEMPRATURE)); Set("colormode", ColorModeStateSerialize(colormode = value)); }
                 }
 
                 private bool reachable;
@@ -175,6 +186,25 @@ namespace HueTest
                 {
                     get { return reachable; }
                     set { Set("reachable", reachable = value); }
+                }
+
+                private void CheckColorMode(ColorModeState colorMode)
+                {
+                    switch (colorMode)
+                    {
+                            case ColorModeState.HUE_AND_SATURATION:
+                            if (!Hue.HasValue || !Saturation.HasValue)
+                                throw new InvalidOperationException("both Hue and Saturation need to be present for this colormode");
+                            break;
+                            case ColorModeState.XY:
+                            if (!xy.HasValue)
+                                throw new InvalidOperationException("X&Y need to be present for this colormode");
+                            break;
+                            case ColorModeState.COLOR_TEMPRATURE:
+                            if (!colormode.HasValue)
+                                throw new InvalidOperationException("ColorTemprature needs to be present for this colormode");
+                            break;
+                    }
                 }
 
                 public StateStruct(SerializationInfo info, StreamingContext context)
@@ -250,7 +280,7 @@ namespace HueTest
 
             public void GetObjectData(SerializationInfo info, StreamingContext context)
             {
-                info.AddValue("state", state);
+                throw new InvalidOperationException("HueLamp may not be serialized");
             }
         }
 
