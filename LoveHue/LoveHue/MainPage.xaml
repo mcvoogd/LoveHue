@@ -1,0 +1,118 @@
+﻿<Page
+    x:Class="LoveHue.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LoveHue"
+    xmlns:control="using:ComicShampoo.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="SectionsTemplate">
+            <Grid HorizontalAlignment="Stretch" Height="130" Width="300" VerticalAlignment="Top">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
+                        <GradientStop Color="White" Offset="0"/>
+                        <GradientStop Color="{Binding Color}" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                
+                <TextBlock Text="{Binding Name}" Margin="12,0,0,30" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe WP SemiLight"/>
+                <ToggleSwitch x:Name="Toggle0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-30,20" OnContent="" OffContent="" Style="{StaticResource CustomToggle}" Width="89" RenderTransformOrigin="0.42,4.311"/>
+
+                <StackPanel Margin="0,0" VerticalAlignment="Bottom" Height="30">
+                    <control:BrightnessSlider Minimum="0" Maximum="100" Value="10" />
+                    </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Page.TopAppBar>
+        <CommandBar Background="Black" Foreground="White" IsSticky="True">
+            <CommandBar.Content>
+                <TextBlock Text="LoveHue" FontSize="20" Foreground="White" FontFamily="Segoe WP Light" Margin="12,12" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </CommandBar.Content>
+            <AppBarButton Icon="Back" HorizontalAlignment="Left" Foreground="White"/>
+            <AppBarButton Icon="Add" HorizontalAlignment="Left" Foreground="White"/>
+
+            <CommandBar.SecondaryCommands >
+
+                <AppBarButton Icon="Like" Label="About"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <ScrollViewer VerticalScrollBarVisibility="Auto" >
+        <StackPanel Margin="0,0,0,0">
+                <ListView x:Name="GroupOfSections" Margin="0,0" SelectionMode="None" ItemTemplate="{StaticResource SectionsTemplate}" HorizontalAlignment="Stretch" Tapped="GroupOfSections_OnTapped"/>
+
+
+                
+            <Grid HorizontalAlignment="Stretch" Height="130" VerticalAlignment="Top">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
+                        <GradientStop Color="White" Offset="0"/>
+                        <GradientStop Color="GreenYellow" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <TextBlock Text="Woonkamer" Margin="12,0,0,30" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe WP SemiLight"/>
+                <ToggleSwitch x:Name="Toggle1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-30,20" OnContent="" OffContent="" Style="{StaticResource CustomToggle}" Width="89" RenderTransformOrigin="0.42,4.311"/>
+
+                <StackPanel Margin="0,0" VerticalAlignment="Bottom" Height="30">
+                    <control:BrightnessSlider Minimum="0" Maximum="100" Value="10" />
+                </StackPanel>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" Height="130" VerticalAlignment="Top">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
+                        <GradientStop Color="White" Offset="0"/>
+                        <GradientStop Color="BlueViolet" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <TextBlock Text="Woonkamer" Margin="12,0,0,30" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe WP SemiLight"/>
+                <ToggleSwitch x:Name="Toggle2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-30,20" OnContent="" OffContent="" Style="{StaticResource CustomToggle}" Width="89" RenderTransformOrigin="0.42,4.311"/>
+
+                <StackPanel Margin="0,0" VerticalAlignment="Bottom" Height="30">
+                    <control:BrightnessSlider Minimum="0" Maximum="100" Value="10" />
+                </StackPanel>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" Height="130" VerticalAlignment="Top">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
+                        <GradientStop Color="White" Offset="0"/>
+                        <GradientStop Color="Wheat" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <TextBlock Text="Woonkamer" Margin="12,0,0,30" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe WP SemiLight"/>
+                <ToggleSwitch x:Name="Toggle3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-30,20" OnContent="" OffContent="" Style="{StaticResource CustomToggle}" Width="89" RenderTransformOrigin="0.42,4.311"/>
+
+                <StackPanel Margin="0,0" VerticalAlignment="Bottom" Height="30">
+                    <control:BrightnessSlider Minimum="0" Maximum="100" Value="10" />
+                </StackPanel>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" Height="130" VerticalAlignment="Top">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
+                        <GradientStop Color="White" Offset="0"/>
+                        <GradientStop Color="LightPink" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <TextBlock Text="Woonkamer" Margin="12,0,0,30" VerticalAlignment="Center" FontSize="20" FontFamily="Segoe WP SemiLight"/>
+                <ToggleSwitch x:Name="Toggle4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,-30,20" OnContent="" OffContent="" Style="{StaticResource CustomToggle}" Width="89" RenderTransformOrigin="0.42,4.311"/>
+
+                <StackPanel Margin="0,0" VerticalAlignment="Bottom" Height="30">
+                        <control:BrightnessSlider Minimum="0" Maximum="100" Value="10" />
+                    </StackPanel>
+            </Grid>
+            <TextBlock FontFamily="Segoe WP SemiLight" Text="Add a new section by clicking the plus." HorizontalAlignment="Center" Margin="0,20"></TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
+</Page>

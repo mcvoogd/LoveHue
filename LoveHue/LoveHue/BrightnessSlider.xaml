@@ -1,0 +1,35 @@
+﻿<UserControl
+    x:Class="ComicShampoo.Control.BrightnessSlider"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ComicShampoo.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    MinHeight="36"
+    d:DesignHeight="36"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Canvas x:Name="Range" Background="{ThemeResource SliderTrackBackgroundThemeBrush}"/>
+
+        <Grid x:Name="SubRange"
+              HorizontalAlignment="Left" IsHitTestVisible="False">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="1,1">
+                    <GradientStop Color="White" Offset="0"/>
+                    <GradientStop Color="Transparent" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Rectangle Fill="White" HorizontalAlignment="Right" Height="auto" VerticalAlignment="Stretch" Width="20"/>
+        </Grid>
+
+        <Grid x:Name="Marker" Background="{ThemeResource SliderHeaderForegroundThemeBrush}"
+              IsHitTestVisible="False"
+              Opacity="0"/>
+
+        <TextBlock x:Name="RangeValue" Foreground="{ThemeResource SliderHeaderForegroundThemeBrush}" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                   Opacity="0.87" Visibility="Collapsed"/>
+    </Grid>
+</UserControl>
