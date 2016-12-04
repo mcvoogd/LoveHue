@@ -232,7 +232,7 @@ namespace HueTest
             private string name;
             private string modelid;
             private Option<string> manufacturername;
-            //private string luminaireuniqueid;
+            private Option<string> luminaireuniqueid;
             private string swversion;
 
             public HueLamp(SerializationInfo info, StreamingContext context)
@@ -244,7 +244,7 @@ namespace HueTest
                 name = info.GetString("name");
                 modelid = info.GetString("modelid");
                 manufacturername = info.Contains("manufacturername", typeof(string)) ? info.GetString("manufacturername").Some() : Option.None<string>();
-                //luminaireuniqueid = info.GetString("luminaireuniqueid");
+                luminaireuniqueid = info.Contains("luminaireuniqueid", typeof(string)) ? info.GetString("luminaireuniqueid").Some() : Option.None<string>();
                 swversion = info.GetString("swversion");
             }
 
