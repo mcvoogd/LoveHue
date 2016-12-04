@@ -98,6 +98,9 @@ namespace HueTest
                 }
 
                 private byte bri;
+                /// <summary>
+                /// Range(1,254)
+                /// </summary>
                 public byte Brightness
                 {
                     get { return bri; }
@@ -105,6 +108,9 @@ namespace HueTest
                 }
 
                 private Option<ushort> hue;
+                /// <summary>
+                /// Optional, Range(0,65535)
+                /// </summary>
                 public Option<ushort> Hue
                 {
                     get { return hue; }
@@ -112,6 +118,9 @@ namespace HueTest
                 }
 
                 private Option<byte> sat;
+                /// <summary>
+                /// Optional, Range(0,254)
+                /// </summary>
                 public Option<byte> Saturation
                 {
                     get { return sat; }
@@ -119,6 +128,9 @@ namespace HueTest
                 }
 
                 private Option<string> effect;
+                /// <summary>
+                /// Optional, sets 
+                /// </summary>
                 public Option<bool> Effect
                 {
                     get { return effect.HasValue ? (effect.ValueOr("none") == "colorloop").Some() : Option.None<bool>(); }
@@ -219,7 +231,7 @@ namespace HueTest
             private string type;
             private string name;
             private string modelid;
-            private string manufacturername;
+            private Option<string> manufacturername;
             //private string luminaireuniqueid;
             private string swversion;
 
@@ -231,7 +243,7 @@ namespace HueTest
                 type = info.GetString("type");
                 name = info.GetString("name");
                 modelid = info.GetString("modelid");
-                manufacturername = info.GetString("manufacturername");
+                manufacturername = info.Contains("manufacturername", typeof(string)) ? info.GetString("manufacturername").Some() : Option.None<string>();
                 //luminaireuniqueid = info.GetString("luminaireuniqueid");
                 swversion = info.GetString("swversion");
             }
