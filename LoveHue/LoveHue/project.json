@@ -2,7 +2,8 @@
   "dependencies": {
     "ColorPicker": "1.0.2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "Newtonsoft.Json": "9.0.1"
+    "Newtonsoft.Json": "9.0.1",
+    "Optional": "3.2.0"
   },
   "frameworks": {
     "uap10.0": {}
