@@ -24,20 +24,26 @@ namespace HueTest
 
     class Program
     {
+        private const string host = /*"192.168.1.179";*/ "localhost"; 
+        private const string filename = "username.txt";
+
         static void Main(string[] args)
         {
+            Console.WindowWidth = 200;
+            Console.WindowHeight = 40;
+
             HueWrapper hueWrapper;
-            if (File.Exists("username.txt") == false)
+            if (File.Exists(filename) == false)
             {
                 Console.WriteLine("CREATING USERNAME");
-                var temp = HueWrapper.CreateHueWrapper("192.168.1.179");
+                var temp = HueWrapper.CreateHueWrapper(host);
                 hueWrapper = temp.Item1;
-                File.WriteAllText("username.txt", temp.Item2);
+                File.WriteAllText(filename, temp.Item2);
             }
             else
             {
                 Console.WriteLine("LOADING USERNAME");
-                hueWrapper = HueWrapper.CreateHueWrapper("192.168.1.179", File.ReadAllText("username.txt")).Item1;
+                hueWrapper = HueWrapper.CreateHueWrapper(host, File.ReadAllText(filename)).Item1;
             }
             /*hueWrapper[10].state.Brightness = 254;
             while (true)
@@ -46,10 +52,17 @@ namespace HueTest
                 hueWrapper[10].state.Brightness -= 10;
                 hueWrapper[10].state.Alert = HueWrapper.HueLamp.StateStruct.AlertState.LSELECT.Some();
             }*/
+
             double avarageHue = (from lamp in hueWrapper
                 where lamp.state.Hue.HasValue
                 select lamp.state.Hue).Average(n => n.ValueOr(0));
             Console.WriteLine("avarage hue = " + avarageHue);
+
+            foreach (HueWrapper.HueLamp lamp in hueWrapper)
+            {
+                Console.WriteLine(lamp.state);
+            }
+
             Console.ReadLine();
         }
     }

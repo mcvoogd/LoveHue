@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,13 +28,12 @@ namespace HueTest
             content = content.Substring(1, content.Length - 2);
             JObject obj = (JObject)JsonConvert.DeserializeObject(content);
             if (obj["error"] != null)
-                Console.WriteLine($"ERROR: {obj["error"]["description"]}");
+                Console.WriteLine($"ERROR: {obj["error"]["description"]}\n\r\tREQUEST: {message}");
         }
 
-        public class HueLamp : ISerializable
+        public class HueLamp
         {
-            [Serializable]
-            public struct StateStruct : ISerializable
+            public struct StateStruct
             {
                 public HueLamp root;
                 private string Header => $"{root.Header}/state";
@@ -207,39 +205,52 @@ namespace HueTest
                     }
                 }
 
-                public StateStruct(SerializationInfo info, StreamingContext context)
+                public StateStruct(JObject state, HueLamp root)
                 {
-                    root = null;
+                    Assert.Debug.True(root != null);
+                    Assert.Debug.True(state != null);
+                    Assert.Debug.True(state.Contains("on"));
+                    Assert.Debug.True(state.Contains("bri"));
+                    Assert.Debug.True(state.Contains("reachable"));
 
-                    on = info.GetBoolean("on");
-                    bri = info.GetByte("bri");
-                    hue = info.Contains("hue", typeof(ushort)) ? info.GetUInt16("hue").Some() : Option.None<ushort>();
-                    sat = info.Contains("sat", typeof(byte)) ? info.GetByte("sat").Some() : Option.None<byte>();
-                    effect = info.Contains("effect", typeof(string)) ? info.GetString("effect").Some() : Option.None<string>();
-                    xy = info.Contains("xy", typeof(float[])) ? ((float[])info.GetValue("xy", typeof(float[]))).Some() : Option.None<float[]>();
-                    ct = info.Contains("ct", typeof(ushort)) ? info.GetUInt16("ct").Some() : Option.None<ushort>();
-                    alert = info.Contains("alert", typeof(string)) ? AlertStateDesirialize(info.GetString("alert")).Some() : Option.None<AlertState>();
-                    colormode = info.Contains("colormode", typeof(string)) ? ColorModeStateDesirialize(info.GetString("colormode")).Some() : Option.None<ColorModeState>();
-                    reachable = info.GetBoolean("reachable");
+                    this.root = root;
+
+                    on = (bool) state.GetValue("on");
+                    bri = (byte) state.GetValue("bri");
+                    hue = state.GetValueOption<ushort>("hue");
+                    sat = state.GetValueOption<byte>("sat");
+                    effect = state.GetValueOption<string>("effect");
+                    xy = state.GetValueOption<float[]>("xy");
+                    ct = state.GetValueOption<ushort>("ct");
+                    alert = state.Contains("alert")
+                        ? AlertStateDesirialize((string) state.GetValue("alert")).Some()
+                        : Option.None<AlertState>();
+                    colormode = state.Contains("colormode")
+                        ? ColorModeStateDesirialize((string) state.GetValue("colormode")).Some()
+                        : Option.None<ColorModeState>();
+                    reachable = (bool) state.GetValue("reachable");
                 }
 
-                public void GetObjectData(SerializationInfo info, StreamingContext context)
+                public JObject Serialize()
                 {
-                    info.AddValue("on", on);
-                    info.AddValue("bri", bri);
-                    info.AddValue("hue", hue);
-                    info.AddValue("sat", sat);
-                    info.AddValue("effect", effect);
-                    info.AddValue("xy", xy);
-                    info.AddValue("ct", ct);
-                    info.AddValue("alert", AlertStateSerialize(alert));
-                    info.AddValue("colormode", ColorModeStateSerialize(colormode));
-                    info.AddValue("reachable", reachable);
+                    JObject state = new JObject {{"on", on}, {"bri", bri}};
+
+                    if (hue.HasValue) state.Add("hue", hue.ValueOr(0));
+                    if (sat.HasValue) state.Add("sat", sat.ValueOr(0));
+                    if (effect.HasValue) state.Add("effect", effect.ValueOr(""));
+                    if (xy.HasValue) state.Add("xy", new JArray(xy.ValueOr(new float[0])));
+                    if (ct.HasValue) state.Add("ct", ct.ValueOr(0));
+                    if (alert.HasValue) state.Add("alert", AlertStateSerialize(alert));
+                    if (colormode.HasValue) state.Add("colormode", ColorModeStateSerialize(colormode));
+                    
+                    state.Add("reachable", reachable);
+
+                    return state;
                 }
 
                 public override string ToString()
                 {
-                    return JsonConvert.SerializeObject(this);
+                    return JsonConvert.SerializeObject(Serialize());
                 }
             }
 
@@ -258,29 +269,46 @@ namespace HueTest
                 set { Set("state", state = value);}
             }
 
-            private string type;
+            private readonly string type;
+
             private string name;
-            private string modelid;
-            private Option<string> manufacturername;
-            private Option<string> luminaireuniqueid;
-            private string swversion;
-
-            public HueLamp(SerializationInfo info, StreamingContext context)
+            /// <summary>
+            /// Range(0,32)
+            /// </summary>
+            public string Name
             {
-                state = (StateStruct)info.GetValue("state", typeof(StateStruct));
-                state.root = this;
-
-                type = info.GetString("type");
-                name = info.GetString("name");
-                modelid = info.GetString("modelid");
-                manufacturername = info.Contains("manufacturername", typeof(string)) ? info.GetString("manufacturername").Some() : Option.None<string>();
-                luminaireuniqueid = info.Contains("luminaireuniqueid", typeof(string)) ? info.GetString("luminaireuniqueid").Some() : Option.None<string>();
-                swversion = info.GetString("swversion");
+                get { return name; }
+                set { Assert.True(value!=null); Assert.Range(value.Length, 0, 32); Set("name", name=value);}
             }
 
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            private readonly string modelid;
+            public string ModelID => modelid;
+
+            private readonly Option<string> uniqueid;
+            public Option<string> UniqueID => uniqueid;
+
+            private readonly Option<string> manufacturername;
+            public Option<string> ManufacturerName => manufacturername;
+
+            private readonly Option<string> luminaireuniqueid;
+            public Option<string> LuminairUniqueID => luminaireuniqueid;
+
+            private readonly string swversion;
+            public string SoftwareVersion => swversion;
+
+            public HueLamp(JObject lamp, HueWrapper root, int sequentialID)
             {
-                throw new InvalidOperationException("HueLamp may not be serialized");
+                this.root = root;
+                this.sequentialID = sequentialID;
+
+                state = new StateStruct((JObject)lamp["state"], this);
+                type = (string) lamp["type"];
+                name = (string) lamp["name"];
+                modelid = (string) lamp["modelid"];
+                uniqueid = lamp.GetValueOption<string>("uniqueid");
+                manufacturername = lamp.GetValueOption<string>("manufacturername");
+                luminaireuniqueid = lamp.GetValueOption<string>("luminaireuniqueid");
+                swversion = (string) lamp["swversion"];
             }
         }
 
@@ -294,7 +322,6 @@ namespace HueTest
         public int LampCount => lamps.Count;
         public HueLamp this[int i] => lamps[i];
 
-
         private HueWrapper(string baseAddress)
         {
             if (baseAddress == null)
@@ -306,15 +333,14 @@ namespace HueTest
         private void SetLamps(string lampsJson)
         {
             if (lamps != null)
-                throw new Exception("lamps may only be set once");
+                throw new InvalidOperationException("lamps may only be set once");
             lamps = new Dictionary<int, HueLamp>();
             JObject lampsDynamic = ((dynamic)JsonConvert.DeserializeObject(lampsJson)).lights;
             foreach (KeyValuePair<string, JToken> element in lampsDynamic)
             {
-                HueLamp lamp = element.Value.ToObject<HueLamp>();
-                lamp.root = this;
-                lamp.sequentialID = int.Parse(element.Key);
-                lamps.Add(lamp.sequentialID, lamp);
+                int sequentialID = int.Parse(element.Key);
+
+                lamps.Add(sequentialID, new HueLamp((JObject)element.Value, this, sequentialID));
             }
         }
 
